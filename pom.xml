@@ -133,16 +133,15 @@
         <java.version>11</java.version>
         <jda.version>5.0.0</jda.version>
         <!--
-            JitPack publishes the JDA-Utilities artifacts under tag-prefixed versions
-            (for example v3.0.10). Without the leading 'v' Maven cannot resolve the
-            dependency, which is what originally caused the cached resolution
-            failure. Keep the tag prefix to ensure JitPack can produce the jar.
+            The most recent tag that JitPack can currently build without errors.
+            Later releases rely on Bintray/JCenter, so sticking to 3.0.5 avoids
+            the cached "artifact not found" error the build previously hit.
         -->
-        <jda.utilities.version>v3.0.10</jda.utilities.version>
+        <jda.utilities.version>3.0.5</jda.utilities.version>
         <lavaplayer.version>2.2.4</lavaplayer.version>
         <logback.version>1.5.7</logback.version>
         <typesafe.config.version>1.4.3</typesafe.config.version>
-        <jsoup.version>1.17.3</jsoup.version>
+        <jsoup.version>1.17.2</jsoup.version>
         <maven.shade.plugin.version>3.5.1</maven.shade.plugin.version>
     </properties>
 </project>
