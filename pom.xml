@@ -57,21 +57,11 @@
             <artifactId>lavaplayer</artifactId>
             <version>2.2.1</version>
         </dependency>
-        <dependency>
-            <groupId>dev.lavalink.youtube</groupId>
-            <artifactId>common</artifactId>
-            <version>1.5.2</version>
-        </dependency>
 	<dependency>
 	    <groupId>com.github.jagrosh</groupId>
 	    <artifactId>JLyrics</artifactId>
 	    <version>master-SNAPSHOT</version>
 	</dependency>
-        <dependency>
-            <groupId>com.dunctebot</groupId>
-            <artifactId>sourcemanagers</artifactId>
-            <version>1.9.0</version>
-        </dependency>
 
         <!-- Misc Internal Dependencies -->
         <dependency>

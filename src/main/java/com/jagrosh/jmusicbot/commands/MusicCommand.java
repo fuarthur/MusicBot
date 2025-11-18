@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.PermissionException;
+import com.jagrosh.jmusicbot.utils.ErrorReporter;
 
 /**
  *
@@ -95,7 +96,14 @@ public abstract class MusicCommand extends Command
             }
         }
         
-        doCommand(event);
+        try
+        {
+            doCommand(event);
+        }
+        catch(Exception ex)
+        {
+            ErrorReporter.reportError(bot, event.getChannel(), ex);
+        }
     }
     
     public abstract void doCommand(CommandEvent event);

@@ -15,8 +15,11 @@
  */
 package com.jagrosh.jmusicbot.playlist;
 
+import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.BotConfig;
+import com.jagrosh.jmusicbot.utils.ErrorReporter;
 import com.jagrosh.jmusicbot.utils.OtherUtil;
+import com.jagrosh.jmusicbot.utils.SoundCloudSourceGuard;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
@@ -155,7 +158,7 @@ public class PlaylistLoader
             this.shuffle = shuffle;
         }
         
-        public void loadTracks(AudioPlayerManager manager, Consumer<AudioTrack> consumer, Runnable callback)
+        public void loadTracks(Bot bot, long channelId, AudioPlayerManager manager, Consumer<AudioTrack> consumer, Runnable callback)
         {
             if(loaded)
                 return;
@@ -164,7 +167,20 @@ public class PlaylistLoader
             {
                 boolean last = i+1 == items.size();
                 int index = i;
-                manager.loadItemOrdered(name, items.get(i), new AudioLoadResultHandler() 
+                String identifier = SoundCloudSourceGuard.prepareIdentifier(items.get(i));
+                if(identifier == null)
+                {
+                    errors.add(new PlaylistLoadError(index, items.get(index), "Only SoundCloud URLs or search terms are supported."));
+                    if(last)
+                    {
+                        if(shuffle)
+                            shuffleTracks();
+                        if(callback != null)
+                            callback.run();
+                    }
+                    continue;
+                }
+                manager.loadItemOrdered(name, identifier, new AudioLoadResultHandler()
                 {
                     private void done()
                     {
@@ -229,8 +245,9 @@ public class PlaylistLoader
                     }
 
                     @Override
-                    public void loadFailed(FriendlyException fe) 
+                    public void loadFailed(FriendlyException fe)
                     {
+                        ErrorReporter.reportError(bot, channelId, fe);
                         errors.add(new PlaylistLoadError(index, items.get(index), "Failed to load track: "+fe.getLocalizedMessage()));
                         done();
                     }

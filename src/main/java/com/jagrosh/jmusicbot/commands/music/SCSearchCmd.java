@@ -16,6 +16,7 @@
 package com.jagrosh.jmusicbot.commands.music;
 
 import com.jagrosh.jmusicbot.Bot;
+import com.jagrosh.jmusicbot.utils.SoundCloudSourceGuard;
 
 /**
  *
@@ -26,7 +27,7 @@ public class SCSearchCmd extends SearchCmd
     public SCSearchCmd(Bot bot)
     {
         super(bot);
-        this.searchPrefix = "scsearch:";
+        this.searchPrefix = SoundCloudSourceGuard.SOUNDCLOUD_SEARCH_PREFIX;
         this.name = "scsearch";
         this.help = "searches Soundcloud for a provided query";
         this.aliases = bot.getConfig().getAliases(this.name);

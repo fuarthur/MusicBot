@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Set;
 import com.jagrosh.jmusicbot.settings.Settings;
 import com.jagrosh.jmusicbot.utils.FormatUtil;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
+import com.jagrosh.jmusicbot.utils.ErrorReporter;
 import java.nio.ByteBuffer;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -153,13 +153,13 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
         Playlist pl = manager.getBot().getPlaylistLoader().getPlaylist(settings.getDefaultPlaylist());
         if(pl==null || pl.getItems().isEmpty())
             return false;
-        pl.loadTracks(manager, (at) -> 
+        pl.loadTracks(manager.getBot(), 0L, manager, (at) ->
         {
             if(audioPlayer.getPlayingTrack()==null)
                 audioPlayer.playTrack(at);
             else
                 defaultQueue.add(at);
-        }, () -> 
+        }, () ->
         {
             if(pl.getTracks().isEmpty() && !manager.getBot().getConfig().getStay())
                 manager.getBot().closeAudioConnection(guildId);
@@ -204,6 +204,9 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
     @Override
     public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
         LoggerFactory.getLogger("AudioHandler").error("Track " + track.getIdentifier() + " has failed to play", exception);
+        RequestMetadata metadata = track.getUserData(RequestMetadata.class);
+        long channelId = metadata == null ? 0L : metadata.getChannelId();
+        ErrorReporter.reportError(manager.getBot(), channelId, exception);
     }
 
     @Override
@@ -244,11 +247,6 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
                 eb.setTitle(track.getInfo().title);
             }
 
-            if(track instanceof YoutubeAudioTrack && manager.getBot().getConfig().useNPImages())
-            {
-                eb.setThumbnail("https://img.youtube.com/vi/"+track.getIdentifier()+"/mqdefault.jpg");
-            }
-            
             if(track.getInfo().author != null && !track.getInfo().author.isEmpty())
                 eb.setFooter("Source: " + track.getInfo().author, null);
 
